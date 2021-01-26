@@ -11,10 +11,13 @@ const createFileName = (hostname, pathname) => {
   return `${formattedHostName}${formattedPathName}.html`;
 };
 
-export default (pathToDirectory, url) => axios.get(url)
-  .then((response) => {
-    const parsedURL = URL.parse(url);
-    const fileName = createFileName(parsedURL.hostname, parsedURL.pathname);
-    const pathToFile = path.resolve(pathToDirectory, fileName);
-    fsPromises.writeFile(pathToFile, response.data, 'utf-8');
-  });
+export default (pathToDirectory, url) => {
+  const parsedURL = URL.parse(url);
+  const fileName = createFileName(parsedURL.hostname, parsedURL.pathname);
+  const pathToFile = path.resolve(pathToDirectory, fileName);
+  return axios.get(url)
+    .then((response) => {
+      fsPromises.writeFile(pathToFile, response.data, 'utf-8');
+    })
+    .then(() => pathToFile);
+};

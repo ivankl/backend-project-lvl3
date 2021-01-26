@@ -6,6 +6,7 @@ export default () => {
     .description('Download a page from Internet and save a file')
     .arguments('<url>')
     .option('-o, --output [path]', 'path to file', process.cwd())
-    .action((url) => downloadPage(programm.output, url))
+    .action((url) => downloadPage(programm.output, url)
+      .then((resultPath) => console.log(resultPath)))
     .parse(process.argv);
 };
