@@ -1,8 +1,12 @@
+/**
+ * @jest-environment node
+ */
+
 import nock from 'nock';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import downloadPage from '../src/index';
+import downloadPage from '../src/index.js';
 
 const fsPromises = fs.promises;
 let tempTestDir;
