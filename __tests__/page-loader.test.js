@@ -1,7 +1,3 @@
-/**
- * @jest-environment node
- */
-
 import nock from 'nock';
 import os from 'os';
 import fs from 'fs';
