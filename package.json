@@ -1,0 +1,38 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "Third project",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "bin": {
+    "page-loader": "bin/page-loader.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivankl/backend-project-lvl3.git"
+  },
+  "author": "Ivan Kozlov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ivankl/backend-project-lvl3/issues"
+  },
+  "homepage": "https://github.com/ivankl/backend-project-lvl3#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "commander": "^6.2.1",
+    "eslint": "^7.17.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "fs": "^0.0.1-security",
+    "jest": "^26.6.3",
+    "os": "^0.1.1",
+    "path": "^0.12.7",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "nock": "^13.0.5"
+  }
+}
