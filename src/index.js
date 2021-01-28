@@ -40,7 +40,7 @@ export default (pathToDirectory, address) => {
       fsPromises.writeFile(pathToFile, response.data, 'utf-8');
       return fsPromises.mkdir(pathToFilesDir);
     })
-    .then(() => links
-      .map((link) => downloadImage(link.href, pathToFilesDir, createFileName(link.hostname, link.pathname))))
+    .then(() => Promise.all(links
+      .map((link) => downloadImage(link.href, pathToFilesDir, createFileName(link.hostname, link.pathname)))))
     .then(() => pathToFile);
 };
