@@ -22,6 +22,7 @@
   "homepage": "https://github.com/ivankl/backend-project-lvl3#readme",
   "dependencies": {
     "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.5",
     "commander": "^6.2.1",
     "eslint": "^7.17.0",
     "eslint-config-airbnb-base": "^14.2.1",
