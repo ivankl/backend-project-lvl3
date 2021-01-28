@@ -47,7 +47,6 @@ test('Is parsed data correct?', async () => {
   console.log(tempTestFilesDir, tempTestDir);
   await downloadPage(tempTestDir, 'https://example.com');
   const result = await fsPromises.readFile(path.join(tempTestDir, 'example-com.html'), 'utf-8');
-  console.log(path.join(tempTestFilesDir, 'example-com-assets-test.png'));
   const resultImg = await fsPromises.readFile(path.join(tempTestFilesDir, 'example-com-assets-test.png'));
   expect(resultImg).toEqual(expectedImg);
   expect(result).toBe(html);
