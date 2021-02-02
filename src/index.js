@@ -26,6 +26,7 @@ export default (pathToDirectory, address) => {
   const pathToFile = path.resolve(pathToDirectory, `${fileName}.html`);
   const pathToFilesDir = path.resolve(pathToDirectory, `${fileName}-files`);
   let links;
+  let html;
   return axios.get(address)
     .then((response) => {
       const $ = cheerio.load(response.data);
@@ -33,14 +34,18 @@ export default (pathToDirectory, address) => {
       links = elements.map((elem) => {
         const parsedSRC = url.parse($(elem).attr('src'));
         if (parsedSRC.hostname === null) {
-          return new URL(parsedSRC.pathname, parsedURL.href);
+          const fullUrl = new URL(parsedSRC.pathname, parsedURL.href);
+          $(elem).attr('src', path.join(`${fileName}-files`, createFileName(fullUrl.hostname, fullUrl.pathname)));
+          return fullUrl;
         }
+        $(elem).attr('src', path.join(`${fileName}-files`, createFileName(parsedSRC.hostname, parsedSRC.pathname)));
         return parsedSRC;
       });
-      fsPromises.writeFile(pathToFile, response.data, 'utf-8');
+      html = $.html();
       return fsPromises.mkdir(pathToFilesDir);
     })
     .then(() => Promise.all(links
       .map((link) => downloadImage(link.href, pathToFilesDir, createFileName(link.hostname, link.pathname)))))
+    .then(() => fsPromises.writeFile(pathToFile, html, 'utf-8'))
     .then(() => pathToFile);
 };
