@@ -28,38 +28,55 @@ const html = `<html lang="ru">
     <head>
         <meta charset="utf-8">
         <title>Курсы по программированию Хекслет</title>
+        <link rel="stylesheet" media="all" href="https://cdn2.hexlet.io/assets/menu.css">
+        <link rel="stylesheet" media="all" href="/assets/application.css" />
     </head>
     <body>
         <img src="/assets/test.png" alt="Иконка профессии Node.js-программист" />
         <h3>
             <a href="/professions/nodejs">Node.js-программист</a>
         </h3>
+        <script src="https://example.com/packs/js/runtime.js"></script>
     </body>
 </html>`;
 
 const expectedHtml = `<html lang="ru"><head>
         <meta charset="utf-8">
         <title>Курсы по программированию Хекслет</title>
+        <link rel="stylesheet" media="all" href="https://cdn2.hexlet.io/assets/menu.css">
+        <link rel="stylesheet" media="all" href="example-com-files/example-com-assets-application.css">
     </head>
     <body>
         <img src="example-com-files/example-com-assets-test.png" alt="Иконка профессии Node.js-программист">
         <h3>
             <a href="/professions/nodejs">Node.js-программист</a>
         </h3>
+        <script src="example-com-files/example-com-packs-js-runtime.js"></script>
     
 </body></html>`;
 
 test('Is parsed data correct?', async () => {
   const expectedImg = await fsPromises.readFile(getFixturePath('test.png'));
+  const expectedJS = await fsPromises.readFile(getFixturePath('runtime.js'));
+  const expectedCSS = await fsPromises.readFile(getFixturePath('application.css'));
   nock('https://example.com')
     .get('/')
     .reply(200, html)
     .get('/assets/test.png')
-    .reply(200, expectedImg);
+    .reply(200, expectedImg)
+    .get('/packs/js/runtime.js')
+    .reply(200, expectedJS)
+    .get('/assets/application.css')
+    .reply(200, expectedCSS);
+
   console.log(tempTestFilesDir, tempTestDir);
   await downloadPage(tempTestDir, 'https://example.com');
   const result = await fsPromises.readFile(path.join(tempTestDir, 'example-com.html'), 'utf-8');
   const resultImg = await fsPromises.readFile(path.join(tempTestFilesDir, 'example-com-assets-test.png'));
+  const resultJS = await fsPromises.readFile(path.join(tempTestFilesDir, 'example-com-packs-js-runtime.js'));
+  const resultCSS = await fsPromises.readFile(path.join(tempTestFilesDir, 'example-com-assets-application.css'));
   expect(resultImg).toEqual(expectedImg);
+  expect(resultJS).toEqual(expectedJS);
+  expect(resultCSS).toEqual(expectedCSS);
   expect(result).toBe(expectedHtml);
 });

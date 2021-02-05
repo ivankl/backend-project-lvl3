@@ -13,39 +13,57 @@ const createFileName = (hostname, pathname) => {
   return `${formattedHostName}${formattedPathName}`;
 };
 
-const downloadImage = (sourceURL, pathToDirectory, imageName) => axios
+const downloadAsset = (sourceURL, pathToDirectory, assetName) => axios
   .get(sourceURL, { responseType: 'arraybuffer' })
   .then((response) => {
-    const pathToImage = path.resolve(pathToDirectory, imageName);
-    return fsPromises.writeFile(pathToImage, response.data);
+    const pathToAsset = path.resolve(pathToDirectory, assetName);
+    return fsPromises.writeFile(pathToAsset, response.data);
   });
+
+const changeLinkToLocal = (element, linkAtrribute, htmlFileName, fullURL) => element
+  .attr(linkAtrribute, path.join(`${htmlFileName}-files`, createFileName(fullURL.hostname, fullURL.pathname)));
+
+const createFullURL = (element, linkAtrribute, hostURL) => {
+  const srcURL = url.parse(element.attr(linkAtrribute));
+  return new URL(srcURL.href, hostURL);
+};
+
+const adaptLinks = (htmlPage, hostURL, htmlFileName) => {
+  const $ = cheerio.load(htmlPage);
+  const tags = ['img', 'link', 'script'];
+  const links = tags.reduce((acc, tag) => {
+    const elements = $(tag).toArray();
+    const linkAtrribute = (tag === 'link' ? 'href' : 'src');
+    return acc.concat(elements.reduce((acc2, elem) => {
+      const fullURL = createFullURL($(elem), linkAtrribute, hostURL.href);
+      if ((tag === 'link' || tag === 'script') && fullURL.hostname !== hostURL.hostname) {
+        return acc2;
+      }
+      changeLinkToLocal($(elem), linkAtrribute, htmlFileName, fullURL);
+      acc2.push(fullURL);
+      return acc2;
+    }, []));
+  }, []);
+  const html = $.html();
+  return { html, links };
+};
 
 export default (pathToDirectory, address) => {
   const parsedURL = url.parse(address);
-  const fileName = createFileName(parsedURL.hostname, parsedURL.pathname);
-  const pathToFile = path.resolve(pathToDirectory, `${fileName}.html`);
-  const pathToFilesDir = path.resolve(pathToDirectory, `${fileName}-files`);
-  let links;
+  const htmlFileName = createFileName(parsedURL.hostname, parsedURL.pathname);
+  const pathToFile = path.resolve(pathToDirectory, `${htmlFileName}.html`);
+  const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}-files`);
   let html;
+  let links;
   return axios.get(address)
     .then((response) => {
-      const $ = cheerio.load(response.data);
-      const elements = $('img').toArray();
-      links = elements.map((elem) => {
-        const parsedSRC = url.parse($(elem).attr('src'));
-        if (parsedSRC.hostname === null) {
-          const fullUrl = new URL(parsedSRC.pathname, parsedURL.href);
-          $(elem).attr('src', path.join(`${fileName}-files`, createFileName(fullUrl.hostname, fullUrl.pathname)));
-          return fullUrl;
-        }
-        $(elem).attr('src', path.join(`${fileName}-files`, createFileName(parsedSRC.hostname, parsedSRC.pathname)));
-        return parsedSRC;
-      });
-      html = $.html();
+      const result = adaptLinks(response.data, parsedURL, htmlFileName);
+      html = result.html;
+      links = result.links;
       return fsPromises.mkdir(pathToFilesDir);
     })
     .then(() => Promise.all(links
-      .map((link) => downloadImage(link.href, pathToFilesDir, createFileName(link.hostname, link.pathname)))))
+      .map((item) => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname)))))
     .then(() => fsPromises.writeFile(pathToFile, html, 'utf-8'))
     .then(() => pathToFile);
 };
