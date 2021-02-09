@@ -69,7 +69,6 @@ test('Is parsed data correct?', async () => {
     .get('/assets/application.css')
     .reply(200, expectedCSS);
 
-  console.log(tempTestFilesDir, tempTestDir);
   await downloadPage(tempTestDir, 'https://example.com');
   const result = await fsPromises.readFile(path.join(tempTestDir, 'example-com.html'), 'utf-8');
   const resultImg = await fsPromises.readFile(path.join(tempTestFilesDir, 'example-com-assets-test.png'));

@@ -4,8 +4,11 @@ import fs from 'fs';
 import path from 'path';
 import url from 'url';
 import cheerio from 'cheerio';
+import debug from 'debug';
+import 'axios-debug-log';
 
 const fsPromises = fs.promises;
+const logger = debug('page-loader');
 
 const createFileName = (hostname, pathname) => {
   const formattedHostName = hostname.replace(/\./g, '-');
@@ -24,6 +27,7 @@ const changeLinkToLocal = (element, linkAtrribute, htmlFileName, fullURL) => ele
   .attr(linkAtrribute, path.join(`${htmlFileName}-files`, createFileName(fullURL.hostname, fullURL.pathname)));
 
 const createFullURL = (element, linkAtrribute, hostURL) => {
+  logger(element.attr(linkAtrribute), linkAtrribute);
   const srcURL = url.parse(element.attr(linkAtrribute));
   return new URL(srcURL.href, hostURL);
 };
@@ -33,6 +37,7 @@ const adaptLinks = (htmlPage, hostURL, htmlFileName) => {
   const tags = ['img', 'link', 'script'];
   const links = tags.reduce((acc, tag) => {
     const elements = $(tag).toArray();
+    logger(`there are ${elements.length} ${tag} elemts on this page`);
     const linkAtrribute = (tag === 'link' ? 'href' : 'src');
     return acc.concat(elements.reduce((acc2, elem) => {
       const fullURL = createFullURL($(elem), linkAtrribute, hostURL.href);
@@ -53,6 +58,8 @@ export default (pathToDirectory, address) => {
   const htmlFileName = createFileName(parsedURL.hostname, parsedURL.pathname);
   const pathToFile = path.resolve(pathToDirectory, `${htmlFileName}.html`);
   const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}-files`);
+  logger(`Downloaded html file name: ${htmlFileName}`);
+  logger(`Downloaded assets are in this folder: ${pathToFilesDir}`);
   let html;
   let links;
   return axios.get(address)
