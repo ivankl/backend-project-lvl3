@@ -63,6 +63,7 @@ export default (pathToDirectory, address) => {
   let links;
   return axios.get(address, { timeout: 4000 })
     .then((response) => {
+      console.log(response.data);
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
       html = result.html;
       links = result.links;
