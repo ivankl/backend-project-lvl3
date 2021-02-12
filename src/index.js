@@ -61,7 +61,7 @@ export default (pathToDirectory, address) => {
   const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}-files`);
   let html;
   let links;
-  return axios.get(address)
+  return axios.get(address, { timeout: 4000 })
     .then((response) => {
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
       html = result.html;
