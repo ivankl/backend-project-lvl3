@@ -79,3 +79,13 @@ test('Is parsed data correct?', async () => {
   expect(resultCSS).toEqual(expectedCSS);
   expect(result).toBe(expectedHtml);
 });
+
+test('http request fail', async () => {
+  nock('https://example.com')
+    .get('/nonExistentPage')
+    .reply(404)
+    .get('/testServerError')
+    .reply(502);
+  await expect(downloadPage(tempTestDir, 'https://example.com/testServerError')).rejects.toThrow();
+  await expect(downloadPage(tempTestDir, 'https://example.com/nonExistentPage')).rejects.toThrow();
+});

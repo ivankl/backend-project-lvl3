@@ -58,8 +58,6 @@ export default (pathToDirectory, address) => {
   const htmlFileName = createFileName(parsedURL.hostname, parsedURL.pathname);
   const pathToFile = path.resolve(pathToDirectory, `${htmlFileName}.html`);
   const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}-files`);
-  logger(`Downloaded html file name: ${htmlFileName}`);
-  logger(`Downloaded assets are in this folder: ${pathToFilesDir}`);
   let html;
   let links;
   return axios.get(address)
@@ -72,5 +70,9 @@ export default (pathToDirectory, address) => {
     .then(() => Promise.all(links
       .map((item) => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname)))))
     .then(() => fsPromises.writeFile(pathToFile, html, 'utf-8'))
-    .then(() => pathToFile);
+    .then(() => {
+      logger(`Downloaded html file name: ${htmlFileName}`);
+      logger(`Downloaded assets are in this folder: ${pathToFilesDir}`);
+      return pathToFile;
+    });
 };

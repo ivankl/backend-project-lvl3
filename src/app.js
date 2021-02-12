@@ -7,6 +7,10 @@ export default () => {
     .arguments('<url>')
     .option('-o, --output [path]', 'path to file', process.cwd())
     .action((url) => downloadPage(programm.output, url)
-      .then((resultPath) => console.log(resultPath)))
+      .then((resultPath) => console.log(resultPath))
+      .catch((error) => {
+        console.error(error.message);
+        process.exit(1);
+      }))
     .parse(process.argv);
 };

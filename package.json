@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "DEBUG=axios,page-loader,nock.* node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "DEBUG=axios,page-loader,nock.intercept node --experimental-vm-modules node_modules/.bin/jest"
   },
   "bin": {
     "page-loader": "bin/page-loader.js"
