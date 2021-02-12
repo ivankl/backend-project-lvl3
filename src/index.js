@@ -34,7 +34,10 @@ const createFullURL = (element, linkAtrribute, hostURL) => {
 };
 
 const adaptLinks = (htmlPage, hostURL, htmlFileName) => {
-  const $ = cheerio.load(htmlPage);
+  const $ = cheerio.load(htmlPage, {
+    normalizeWhitespace: true,
+    decodeEntities: false,
+  });
   const tags = ['img', 'link', 'script'];
   const links = tags.reduce((acc, tag) => {
     const elements = $(tag).toArray();
