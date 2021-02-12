@@ -18,6 +18,7 @@ const getFixturePath = (fileName) => path.join(__dirname, '..', '__fixtures__', 
 const fsPromises = fs.promises;
 let tempTestDir;
 let tempTestFilesDir;
+nock.disableNetConnect();
 
 beforeEach(async () => {
   tempTestDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
@@ -95,4 +96,11 @@ test('http request fail', async () => {
     .reply(502);
   await expect(downloadPage(tempTestDir, 'https://example.com/testServerError')).rejects.toThrow();
   await expect(downloadPage(tempTestDir, 'https://example.com/nonExistentPage')).rejects.toThrow();
+});
+
+test('directory does not exist', async () => {
+  nock('https://example.com')
+    .get('/')
+    .reply(200);
+  await expect(downloadPage('/tmp/dir', 'https://example.com')).rejects.toThrow('ENOENT');
 });

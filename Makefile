@@ -4,7 +4,7 @@ install:
 lint:
 	npx eslint .
 
-test: 
+run test: 
 	npm test
 
 test-coverage:
