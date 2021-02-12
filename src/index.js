@@ -5,6 +5,7 @@ import path from 'path';
 import url from 'url';
 import cheerio from 'cheerio';
 import debug from 'debug';
+import Listr from 'listr';
 import 'axios-debug-log';
 
 const fsPromises = fs.promises;
@@ -67,8 +68,14 @@ export default (pathToDirectory, address) => {
       links = result.links;
       return fsPromises.mkdir(pathToFilesDir);
     })
-    .then(() => Promise.all(links
-      .map((item) => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname)))))
+    .then(() => {
+      const data = links.map((item) => ({
+        title: item.href,
+        task: () => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname)),
+      }));
+      const tasks = new Listr(data, { concurrent: true, exitOnError: false });
+      return tasks.run();
+    })
     .then(() => fsPromises.writeFile(pathToFile, html, 'utf-8'))
     .then(() => {
       logger(`Downloaded html file name: ${htmlFileName}`);
