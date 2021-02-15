@@ -6,6 +6,7 @@ import url from 'url';
 import cheerio from 'cheerio';
 import debug from 'debug';
 import Listr from 'listr';
+import _ from 'lodash';
 import 'axios-debug-log';
 
 const fsPromises = fs.promises;
@@ -75,7 +76,7 @@ export default (pathToDirectory, address) => {
     .then(() => {
       const data = links.map((item) => ({
         title: item.href,
-        task: () => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname, path.parse(item.pathname).ext)),
+        task: () => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname, path.parse(item.pathname).ext)).catch(_.noop),
       }));
       const tasks = new Listr(data, { concurrent: true, exitOnError: false });
       return tasks.run();
