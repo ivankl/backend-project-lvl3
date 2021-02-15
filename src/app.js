@@ -13,7 +13,7 @@ export default () => {
       })
       .catch((error) => {
         console.error(error.message);
-        process.exitCode = 1;
+        process.exit(1);
       }))
     .parse(process.argv);
 };

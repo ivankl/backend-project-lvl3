@@ -18,6 +18,7 @@ const getFixturePath = (fileName) => path.join(__dirname, '..', '__fixtures__', 
 const fsPromises = fs.promises;
 let tempTestDir;
 let tempTestFilesDir;
+
 nock.disableNetConnect();
 
 beforeEach(async () => {
@@ -95,8 +96,8 @@ test('http request fails', async () => {
     .get('/testServerError')
     .reply(502, 'Server error')
     .get('/delayTest')
-    .delayConnection(6000)
-    .reply(503, 'Timeout');
+    .delayConnection(4000)
+    .reply(504, 'Timeout');
   await expect(downloadPage(tempTestDir, 'https://example.com/testServerError')).rejects.toThrow();
   await expect(downloadPage(tempTestDir, 'https://example.com/nonExistentPage')).rejects.toThrow();
   await expect(downloadPage(tempTestDir, 'https://example.com/delayTest')).rejects.toThrow();
