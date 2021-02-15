@@ -22,7 +22,7 @@ nock.disableNetConnect();
 
 beforeEach(async () => {
   tempTestDir = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
-  tempTestFilesDir = path.join(tempTestDir, 'example-com-files');
+  tempTestFilesDir = path.join(tempTestDir, 'example-com_files');
 });
 
 const html = `<html lang="ru">
@@ -46,15 +46,15 @@ const expectedHtml = `<html lang="ru"><head>
         <meta charset="utf-8">
         <title>Курсы по программированию Хекслет</title>
         <link rel="stylesheet" media="all" href="https://cdn2.hexlet.io/assets/menu.css">
-        <link rel="stylesheet" media="all" href="example-com-files/example-com-assets-application.css">
-        <link rel="stylesheet" media="all" href="example-com-files/example-com-assets-application.html">
+        <link rel="stylesheet" media="all" href="example-com_files/example-com-assets-application.css">
+        <link rel="stylesheet" media="all" href="example-com_files/example-com-assets-application.html">
     </head>
     <body>
-        <img src="example-com-files/example-com-assets-test.png" alt="Иконка профессии Node.js-программист">
+        <img src="example-com_files/example-com-assets-test.png" alt="Иконка профессии Node.js-программист">
         <h3>
             <a href="/professions/nodejs">Node.js-программист</a>
         </h3>
-        <script src="example-com-files/example-com-packs-js-runtime.js"></script>
+        <script src="example-com_files/example-com-packs-js-runtime.js"></script>
     
 </body></html>`;
 

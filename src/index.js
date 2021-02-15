@@ -25,7 +25,7 @@ const downloadAsset = (sourceURL, pathToDirectory, assetName) => axios
   });
 
 const changeLinkToLocal = (element, linkAtrribute, htmlFileName, fullURL) => element
-  .attr(linkAtrribute, path.join(`${htmlFileName}-files`, createFileName(fullURL.hostname, fullURL.pathname)));
+  .attr(linkAtrribute, path.join(`${htmlFileName}_files`, createFileName(fullURL.hostname, fullURL.pathname)));
 
 const createFullURL = (element, linkAtrribute, hostURL) => {
   logger(element.attr(linkAtrribute), linkAtrribute);
