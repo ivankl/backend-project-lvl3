@@ -65,9 +65,8 @@ export default (pathToDirectory, address) => {
   const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}_files`);
   let html;
   let links;
-  return axios.get(address, { timeout: 3000 })
+  return axios.get(address)
     .then((response) => {
-      console.log(response.data);
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
       html = result.html;
       links = result.links;
@@ -78,7 +77,7 @@ export default (pathToDirectory, address) => {
         title: item.href,
         task: () => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname, path.parse(item.pathname).ext)).catch(_.noop),
       }));
-      const tasks = new Listr(data, { concurrent: true, exitOnError: false });
+      const tasks = new Listr(data, { concurrent: true });
       return tasks.run();
     })
     .then(() => fsPromises.writeFile(pathToFile, html, 'utf-8'))
