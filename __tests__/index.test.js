@@ -101,6 +101,7 @@ test('http request fails', async () => {
   await expect(downloadPage(tempTestDir, 'https://example.com/testServerError')).rejects.toThrow();
   await expect(downloadPage(tempTestDir, 'https://example.com/nonExistentPage')).rejects.toThrow();
   await expect(downloadPage(tempTestDir, 'https://example.com/delayTest')).rejects.toThrow();
+  await expect(fsPromises.access(path.join(tempTestDir, 'example-com-delayTest.html'))).rejects.toThrow(/ENOENT/);
 });
 
 test('directory does not exist', async () => {
