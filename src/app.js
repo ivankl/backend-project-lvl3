@@ -10,7 +10,7 @@ export default () => {
       .then((resultPath) => console.log(`Downloaded html file can be found here ${resultPath}`))
       .catch((error) => {
         console.error(error.message);
-        process.exitCode = 1;
+        process.exit(1);
       }))
     .parse(process.argv);
 };
