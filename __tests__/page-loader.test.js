@@ -88,14 +88,18 @@ test('Is parsed data correct?', async () => {
   expect(result).toBe(expectedHtml);
 });
 
-test('http request fail', async () => {
+test('http request fails', async () => {
   nock('https://example.com')
     .get('/nonExistentPage')
-    .reply(404)
+    .reply(404, 'Page does not exist')
     .get('/testServerError')
-    .reply(502);
+    .reply(502, 'Server error')
+    .get('/delayTest')
+    .delayConnection(4000)
+    .reply(503, 'Timeout');
   await expect(downloadPage(tempTestDir, 'https://example.com/testServerError')).rejects.toThrow();
   await expect(downloadPage(tempTestDir, 'https://example.com/nonExistentPage')).rejects.toThrow();
+  await expect(downloadPage(tempTestDir, 'https://example.com/delayTest')).rejects.toThrow();
 });
 
 test('directory does not exist', async () => {

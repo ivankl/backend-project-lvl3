@@ -7,10 +7,13 @@ export default () => {
     .arguments('<url>')
     .option('-o, --output [path]', 'path to file', process.cwd())
     .action((url) => downloadPage(programm.output, url)
-      .then((resultPath) => console.log(`Downloaded html file can be found here ${resultPath}`))
+      .then((resultPath) => {
+        console.log(`Downloaded html file can be found here ${resultPath}`);
+        process.exit();
+      })
       .catch((error) => {
         console.error(error.message);
-        process.exit(1);
+        process.exitCode = 1;
       }))
     .parse(process.argv);
 };
