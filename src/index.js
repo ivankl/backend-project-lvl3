@@ -11,10 +11,10 @@ import 'axios-debug-log';
 const fsPromises = fs.promises;
 const logger = debug('page-loader');
 
-const createFileName = (hostname, pathname) => {
+const createFileName = (hostname, pathname, ext) => {
   const formattedHostName = hostname.replace(/\./g, '-');
   const formattedPathName = (pathname === '/' ? '' : pathname.replace(/\//g, '-'));
-  return `${formattedHostName}${formattedPathName}`;
+  return (ext ? `${formattedHostName}${formattedPathName}` : `${formattedHostName}${formattedPathName}.html`);
 };
 
 const downloadAsset = (sourceURL, pathToDirectory, assetName) => axios
@@ -24,11 +24,11 @@ const downloadAsset = (sourceURL, pathToDirectory, assetName) => axios
     return fsPromises.writeFile(pathToAsset, response.data);
   });
 
-const changeLinkToLocal = (element, linkAtrribute, htmlFileName, fullURL) => element
-  .attr(linkAtrribute, path.join(`${htmlFileName}_files`, createFileName(fullURL.hostname, fullURL.pathname)));
+const changeLinkToLocal = (element, linkAtrribute, htmlFileName, assetName) => element
+  .attr(linkAtrribute, path.join(`${htmlFileName}_files`, assetName));
 
 const createFullURL = (element, linkAtrribute, hostURL) => {
-  logger(element.attr(linkAtrribute), linkAtrribute);
+  logger(`Current element: ${element.attr(linkAtrribute)}, ${linkAtrribute}`);
   const srcURL = url.parse(element.attr(linkAtrribute));
   return new URL(srcURL.href, hostURL);
 };
@@ -41,14 +41,14 @@ const adaptLinks = (htmlPage, hostURL, htmlFileName) => {
   const tags = ['img', 'link', 'script'];
   const links = tags.reduce((acc, tag) => {
     const elements = $(tag).toArray();
-    logger(`there are ${elements.length} ${tag} elemts on this page`);
+    logger(`there are ${elements.length} ${tag} elements on this page`);
     const linkAtrribute = (tag === 'link' ? 'href' : 'src');
     return acc.concat(elements.reduce((acc2, elem) => {
       const fullURL = createFullURL($(elem), linkAtrribute, hostURL.href);
       if ((tag === 'link' || tag === 'script') && fullURL.hostname !== hostURL.hostname) {
         return acc2;
       }
-      changeLinkToLocal($(elem), linkAtrribute, htmlFileName, fullURL);
+      changeLinkToLocal($(elem), linkAtrribute, htmlFileName, createFileName(fullURL.hostname, fullURL.pathname, path.parse(fullURL.pathname).ext));
       acc2.push(fullURL);
       return acc2;
     }, []));
@@ -59,12 +59,12 @@ const adaptLinks = (htmlPage, hostURL, htmlFileName) => {
 
 export default (pathToDirectory, address) => {
   const parsedURL = url.parse(address);
-  const htmlFileName = createFileName(parsedURL.hostname, parsedURL.pathname);
+  const htmlFileName = createFileName(parsedURL.hostname, parsedURL.pathname, '.html');
   const pathToFile = path.resolve(pathToDirectory, `${htmlFileName}.html`);
   const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}_files`);
   let html;
   let links;
-  return axios.get(address, { timeout: 4000 })
+  return axios.get(address)
     .then((response) => {
       console.log(response.data);
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
@@ -75,7 +75,7 @@ export default (pathToDirectory, address) => {
     .then(() => {
       const data = links.map((item) => ({
         title: item.href,
-        task: () => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname)),
+        task: () => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname, path.parse(item.pathname).ext)),
       }));
       const tasks = new Listr(data, { concurrent: true, exitOnError: false });
       return tasks.run();
