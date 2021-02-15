@@ -77,7 +77,7 @@ export default (pathToDirectory, address) => {
         title: item.href,
         task: () => downloadAsset(item.href, pathToFilesDir, createFileName(item.hostname, item.pathname, path.parse(item.pathname).ext)).catch(_.noop),
       }));
-      const tasks = new Listr(data, { concurrent: true });
+      const tasks = new Listr(data, { concurrent: true, exitOnError: true });
       return tasks.run();
     })
     .then(() => fsPromises.writeFile(pathToFile, html, 'utf-8'))
