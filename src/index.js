@@ -70,8 +70,9 @@ export default (pathToDirectory, address) => {
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
       html = result.html;
       links = result.links;
-      return fsPromises.mkdir(pathToFilesDir);
+      return fsPromises.writeFile(pathToFile, html, 'utf-8')
     })
+    .then(() => fsPromises.mkdir(pathToFilesDir))
     .then(() => {
       const data = links.map((item) => ({
         title: item.href,
@@ -80,7 +81,6 @@ export default (pathToDirectory, address) => {
       const tasks = new Listr(data, { concurrent: true, exitOnError: true });
       return tasks.run();
     })
-    .then(() => fsPromises.writeFile(pathToFile, html, 'utf-8'))
     .then(() => {
       logger(`Downloaded html file name: ${htmlFileName}`);
       logger(`Downloaded assets are in this folder: ${pathToFilesDir}`);
