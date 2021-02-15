@@ -61,7 +61,7 @@ export default (pathToDirectory, address) => {
   const parsedURL = url.parse(address);
   const htmlFileName = createFileName(parsedURL.hostname, parsedURL.pathname);
   const pathToFile = path.resolve(pathToDirectory, `${htmlFileName}.html`);
-  const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}-files`);
+  const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}_files`);
   let html;
   let links;
   return axios.get(address, { timeout: 4000 })
