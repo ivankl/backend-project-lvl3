@@ -70,7 +70,7 @@ export default (pathToDirectory, address) => {
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
       html = result.html;
       links = result.links;
-      return fsPromises.writeFile(pathToFile, html, 'utf-8')
+      return fsPromises.writeFile(pathToFile, html, 'utf-8');
     })
     .then(() => fsPromises.mkdir(pathToFilesDir))
     .then(() => {
