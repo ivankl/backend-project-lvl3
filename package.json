@@ -2,7 +2,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "Third project",
-  "main": "src/app.js",
+  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "test": "DEBUG=axios,page-loader node --experimental-vm-modules node_modules/.bin/jest"
