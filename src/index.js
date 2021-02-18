@@ -58,7 +58,7 @@ const adaptLinks = (htmlPage, hostURL, htmlFileName) => {
   return { html, links };
 };
 
-export default (address, pathToDirectory) => {
+export default (address, pathToDirectory = process.cwd()) => {
   const parsedURL = url.parse(address);
   const htmlFileName = createFileName(parsedURL.hostname, parsedURL.pathname, '.html');
   const pathToFile = path.resolve(pathToDirectory, `${htmlFileName}.html`);
