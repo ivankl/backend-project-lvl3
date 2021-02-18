@@ -65,6 +65,7 @@ export default (pathToDirectory, address) => {
   const pathToFilesDir = path.resolve(pathToDirectory, `${htmlFileName}_files`);
   let html;
   let links;
+  console.log(address);
   return axios.get(address)
     .then((response) => {
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
