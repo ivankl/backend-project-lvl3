@@ -76,7 +76,7 @@ test('Is parsed data correct?', async () => {
     .get('/assets/application.html')
     .reply(200, expectedhref);
 
-  await downloadPage(tempTestDir, 'https://example.com');
+  await downloadPage('https://example.com', tempTestDir);
   const result = await fsPromises.readFile(path.join(tempTestDir, 'example-com.html'), 'utf-8');
   const resultImg = await fsPromises.readFile(path.join(tempTestFilesDir, 'example-com-assets-test.png'));
   const resultJS = await fsPromises.readFile(path.join(tempTestFilesDir, 'example-com-packs-js-runtime.js'));
@@ -98,15 +98,15 @@ test('http request fails', async () => {
     .get('/delayTest')
     .delayConnection(4000)
     .reply(504, 'Timeout');
-  await expect(downloadPage(tempTestDir, 'https://example.com/testServerError')).rejects.toThrow();
-  await expect(downloadPage(tempTestDir, 'https://example.com/nonExistentPage')).rejects.toThrow();
-  await expect(downloadPage(tempTestDir, 'https://example.com/delayTest')).rejects.toThrow();
-  await expect(fsPromises.access(path.join(tempTestDir, 'example-com-delayTest.html'))).rejects.toThrow(/ENOENT/);
+  await expect(downloadPage('https://example.com/testServerError', tempTestDir)).rejects.toThrow();
+  await expect(downloadPage('https://example.com/nonExistentPage', tempTestDir)).rejects.toThrow();
+  await expect(downloadPage('https://example.com/delayTest', tempTestDir)).rejects.toThrow();
+  await expect(fsPromises.access(path.join('example-com-delayTest.html', tempTestDir))).rejects.toThrow(/ENOENT/);
 });
 
 test('directory does not exist', async () => {
   nock('https://example.com')
     .get('/')
     .reply(200);
-  await expect(downloadPage('/tmp/dir', 'https://example.com')).rejects.toThrow('ENOENT');
+  await expect(downloadPage('https://example.com', '/tmp/dir')).rejects.toThrow('ENOENT');
 });
