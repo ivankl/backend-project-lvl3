@@ -4,7 +4,7 @@ install:
 lint:
 	npx eslint .
 
-run test: 
+test: 
 	npm test
 
 test-coverage:
@@ -12,3 +12,5 @@ test-coverage:
 
 publish:
 	npm publish --dry-run
+
+.PHONY: test
