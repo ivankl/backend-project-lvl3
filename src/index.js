@@ -66,7 +66,7 @@ export default (address, pathToDirectory) => {
   let html;
   let links;
   console.log(address);
-  return axios.get(address)
+  return axios.get(address, { timeout: 2000 })
     .then((response) => {
       const result = adaptLinks(response.data, parsedURL, htmlFileName);
       html = result.html;
