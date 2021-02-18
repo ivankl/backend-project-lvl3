@@ -96,7 +96,7 @@ test('http request fails', async () => {
     .get('/testServerError')
     .reply(502, 'Server error')
     .get('/delayTest')
-    .delayConnection(400)
+    .delayConnection(4000)
     .reply(504, 'Timeout');
   await expect(downloadPage('https://example.com/testServerError', tempTestDir)).rejects.toThrow();
   await expect(downloadPage('https://example.com/nonExistentPage', tempTestDir)).rejects.toThrow();
