@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/ivankl/backend-project-lvl3#readme",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^1.13.6",
     "axios-debug-log": "^0.8.2",
     "cheerio": "^1.0.0-rc.5",
     "commander": "^6.2.1",
